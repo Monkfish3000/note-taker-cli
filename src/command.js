@@ -1,5 +1,13 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import {
+  getAllNotes,
+  newNote,
+  findNotes,
+  removeNote,
+  removeAllNotes,
+} from "./notes.js";
+import { listNotes } from "./utils.js";
 
 yargs(hideBin(process.argv))
   .command(
@@ -11,8 +19,10 @@ yargs(hideBin(process.argv))
         description: "Content of the note",
       });
     },
-    (argv) => {
-      console.log(argv.note);
+    async (argv) => {
+      const tags = argv.tags ? argv.tags.split(",") : [];
+      const note = await newNote(argv.note, tags);
+      console.log("New note! ", note);
     }
   )
   .option("tags", {
@@ -20,12 +30,10 @@ yargs(hideBin(process.argv))
     type: "string",
     description: "tags to add to the note",
   })
-  .command(
-    "all",
-    "get all notes",
-    () => {},
-    async (argv) => {}
-  )
+  .command("all", "get all notes", async (argv) => {
+    const notes = await getAllNotes();
+    listNotes(notes);
+  })
   .command(
     "find <filter>",
     "get matching notes",
@@ -36,7 +44,10 @@ yargs(hideBin(process.argv))
         type: "string",
       });
     },
-    async (argv) => {}
+    async (argv) => {
+      const matches = await findNotes(argv.filter);
+      listNotes(matches);
+    }
   )
   .command(
     "remove <id>",
@@ -47,7 +58,10 @@ yargs(hideBin(process.argv))
         description: "The id of the note you want to remove",
       });
     },
-    async (argv) => {}
+    async (argv) => {
+      const id = await removeNote(argv.id);
+      console.log(id);
+    }
   )
   .command(
     "web [port]",
@@ -65,7 +79,10 @@ yargs(hideBin(process.argv))
     "clean",
     "remove all notes",
     () => {},
-    async (argv) => {}
+    async (argv) => {
+      await removeAllNotes();
+      console.log("DB Reset");
+    }
   )
   .demandCommand(1)
   .parse();
