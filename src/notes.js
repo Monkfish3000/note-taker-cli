@@ -1,10 +1,10 @@
-import { insertDB, saveDB, getDB } from "./db";
+import { insertDB, saveDB, getDB } from "./db.js";
 
-export const newNote = async (note, tags) => {
+export const newNote = async (note, tags = []) => {
   const newNote = {
     tags,
     content: note,
-    id: new Date.now(),
+    id: Date.now(),
   };
 
   await insertDB(newNote);
@@ -17,7 +17,7 @@ export const getAllNotes = async () => {
 };
 
 export const findNotes = async (filter) => {
-  const { notes } = notes;
+  const { notes } = await getDB();
 
   return notes.filter((note) =>
     note.content.toLowerCase().includes(filter.toLowerCase())
