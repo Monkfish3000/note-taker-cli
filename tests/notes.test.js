@@ -38,3 +38,18 @@ test("getAllNotes returns all notes", async () => {
 
   expect(result).toEqual(db.notes);
 });
+
+test("remove note does nothing if ID not found", async () => {
+  const notes = [
+    { id: 1, content: "note1" },
+    { id: 2, content: "note2" },
+    { id: 3, content: "note3" },
+  ];
+
+  saveDB.mockResolvedValue(notes);
+
+  const idToRemove = 4;
+  const result = await removeNote(idToRemove);
+
+  expect(result).toBeUndefined();
+});
