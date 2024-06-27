@@ -27,3 +27,14 @@ test("new note - inserts data and returns it", async () => {
   expect(result.content).toEqual(note.content);
   expect(result.tags).toEqual(note.tags);
 });
+
+test("getAllNotes returns all notes", async () => {
+  const db = {
+    notes: ["note1", "note2", "note2"],
+  };
+  getDB.mockResolvedValue(db);
+
+  const result = await getAllNotes();
+
+  expect(result).toEqual(db.notes);
+});
